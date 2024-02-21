@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Test;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class OfferFacadeTest {
 
@@ -94,7 +95,45 @@ class OfferFacadeTest {
         assertEquals(3, allOffers.size());
     }
 
+    @Test
+    public void should_properly_return_offer_by_id_test_1() {
 
+        OfferFacade offerFacade = new OfferFacade(
+                new InMemoryOfferRepositoryTestImpl(),
+                new OfferMapper(
+                        new IdGeneratorTestImpl()
+                )
+        );
 
+        offerFacade.saveOffer(
+                OfferRequestDto.builder()
+                        .url("urlTested")
+                        .jobTitle("jobTitle")
+                        .companyName("companyName")
+                        .lowerBoundSalary(1000L)
+                        .upperBoundSalary(2000L)
+                        .build()
+
+        );
+
+        final OfferResponseDto offerById = offerFacade.findOfferById("test-id");
+
+        assertEquals("urlTested", offerById.url());
+    }
+
+    @Test
+    public void should_throw_not_found_in_database_exception() {
+
+        OfferFacade offerFacade = new OfferFacade(
+                new InMemoryOfferRepositoryTestImpl(),
+                new OfferMapper(
+                        new IdGeneratorTestImpl()
+                )
+        );
+
+        assertThrows(NotFoundInDatabaseException.class, () -> {
+            offerFacade.findOfferById("test-id");
+        });
+    }
 
 }

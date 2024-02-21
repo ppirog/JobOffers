@@ -5,4 +5,5 @@ class IdGeneratorTestImpl implements IdGenerable {
     public String generateId() {
         return "test-id";
     }
+
 }

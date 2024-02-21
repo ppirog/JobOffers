@@ -15,7 +15,7 @@ class InMemoryOfferRepositoryTestImpl implements OfferRepository {
     }
 
     @Override
-    public Optional<Offer> findById(final Long id) {
+    public Optional<Offer> findById(final String  id) {
         return Optional.ofNullable(offers.get(id));
     }
 
