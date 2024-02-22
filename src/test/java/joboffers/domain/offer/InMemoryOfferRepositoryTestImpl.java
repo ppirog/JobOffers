@@ -23,4 +23,9 @@ class InMemoryOfferRepositoryTestImpl implements OfferRepository {
     public List<Offer> findAll() {
         return offers.values().stream().toList();
     }
+
+    @Override
+    public void saveAll(final List<Offer> offers) {
+        offers.forEach(offer -> this.offers.put(offer.id(), offer));
+    }
 }

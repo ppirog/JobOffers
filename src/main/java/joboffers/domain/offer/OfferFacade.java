@@ -2,6 +2,7 @@ package joboffers.domain.offer;
 
 import joboffers.domain.offer.dto.OfferRequestDto;
 import joboffers.domain.offer.dto.OfferResponseDto;
+import joboffers.domain.offer.dto.OfferResponseFromServerDto;
 import lombok.AllArgsConstructor;
 
 import java.util.List;
@@ -12,6 +13,8 @@ public class OfferFacade {
 
     private final OfferRepository offerRepository;
     private final OfferMapper offerMapper;
+    private final OfferFetchable offerFetcher;
+    private final OfferFilter offerFilter;
 
     public List<OfferResponseDto> findAllOffers() {
         final List<Offer> all = offerRepository.findAll();
@@ -27,7 +30,7 @@ public class OfferFacade {
         return offerMapper.toDto(byId);
     }
 
-    //
+
     public void saveOffer(OfferRequestDto requestDto) {
 
         final Offer offer = offerMapper.toOffer(requestDto);
@@ -35,10 +38,19 @@ public class OfferFacade {
         offerRepository.save(offer);
     }
 
-//    public List<OfferResponseDto> fetchAllOffersAndSavellIfNotExist() {
-//        final List<Offer> all = offerRepository.findAll();
-//        return all.stream()
-//                .map(offerMapper::toDto)
-//                .collect(Collectors.toList());
-//    }
+    public List<OfferResponseDto> fetchAllOffersAndSavellIfNotExist() {
+        final List<Offer> all = offerRepository.findAll();
+
+        final List<OfferResponseFromServerDto> offerResponseFromServerDtos = offerFetcher.fetchAllOffers();
+
+        final List<Offer> collected = offerMapper.toOfferList(offerResponseFromServerDtos);
+
+        final List<Offer> offersToAddToDatabase = offerFilter.filterByUrl(all, collected);
+
+        offerRepository.saveAll(offersToAddToDatabase);
+
+        return offersToAddToDatabase.stream()
+                .map(offerMapper::toDto)
+                .collect(Collectors.toList());
+    }
 }

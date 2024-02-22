@@ -8,4 +8,6 @@ interface OfferRepository {
     Optional<Offer> findById(String id);
 
     List<Offer> findAll();
+
+    void saveAll(List<Offer> offers);
 }
