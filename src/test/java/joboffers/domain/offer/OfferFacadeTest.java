@@ -5,9 +5,12 @@ import joboffers.domain.offer.dto.OfferResponseDto;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class OfferFacadeTest {
 
@@ -65,9 +68,9 @@ class OfferFacadeTest {
 
         offerFacade.saveOffer(
                 OfferRequestDto.builder()
-                        .url("url")
-                        .jobTitle("jobTitle")
-                        .companyName("companyName")
+                        .url("url1")
+                        .jobTitle("jobTitle1")
+                        .companyName("companyName1")
                         .lowerBoundSalary(1000L)
                         .upperBoundSalary(2000L)
                         .build()
@@ -96,7 +99,14 @@ class OfferFacadeTest {
 
         final List<OfferResponseDto> allOffers = offerFacade.findAllOffers();
 
+        final Set<String> collect = allOffers.stream()
+                .map(OfferResponseDto::url)
+                .collect(Collectors.toSet());
+
         assertEquals(3, allOffers.size());
+        assertTrue(collect.contains("url1"));
+        assertTrue(collect.contains("url2"));
+        assertTrue(collect.contains("url3"));
     }
 
     @Test
@@ -139,9 +149,7 @@ class OfferFacadeTest {
                 new OfferFilter()
         );
 
-        assertThrows(NotFoundInDatabaseException.class, () -> {
-            offerFacade.findOfferById("test-id");
-        });
+        assertThrows(NotFoundInDatabaseException.class, () -> offerFacade.findOfferById("test-id"));
     }
 
 
@@ -227,6 +235,7 @@ class OfferFacadeTest {
         final List<OfferResponseDto> allOffers = offerFacade.fetchAllOffersAndSavellIfNotExist();
 
         assertEquals(1, allOffers.size());
+        assertEquals("https://www.offer.com", allOffers.get(0).url());
     }
 
 
