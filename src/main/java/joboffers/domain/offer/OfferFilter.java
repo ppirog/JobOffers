@@ -11,7 +11,7 @@ class OfferFilter {
         final List<String> idList = all
                 .stream()
                 .map(Offer::url).toList();
-
+    
         return collected
                 .stream()
                 .filter(offer -> !idList.contains(offer.url()))
