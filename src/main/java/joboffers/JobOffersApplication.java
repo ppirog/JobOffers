@@ -3,10 +3,9 @@ package joboffers;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 @SpringBootApplication
-public class LottoSpringBootApplication {
-
+public class JobOffersApplication {
     public static void main(String[] args) {
-        SpringApplication.run(LottoSpringBootApplication.class, args);
+        SpringApplication.run(JobOffersApplication.class, args);
     }
 }
 
