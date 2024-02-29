@@ -4,12 +4,11 @@ import lombok.Builder;
 
 @Builder
 public record OfferResponseFromServerDto(
-        String url,
-        String jobTitle,
-        String companyName,
-        Long salary,
+        String offerUrl,
+        String title,
+        String company,
+        String salary,
         Long lowerBoundSalary,
-
         Long upperBoundSalary
 ) {
 }

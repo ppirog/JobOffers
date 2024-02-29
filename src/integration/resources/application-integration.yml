@@ -1,0 +1,7 @@
+job-offers:
+  offer-fetcher:
+    http:
+      client:
+        config:
+          uri: http://localhost
+          port: 80

@@ -1,9 +1,16 @@
 package joboffers.feature;
 
-import org.junit.jupiter.api.Test;
+import com.github.tomakehurst.wiremock.client.WireMock;
 import joboffers.BaseIntegrationTest;
+import joboffers.domain.offer.OfferFetchable;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 
 class ApplicationFetchAndShowDataTest extends BaseIntegrationTest {
+
+    @Autowired
+    OfferFetchable offerFetchable;
 
     @Test
     public void user_want_to_see_offers_but_have_to_logged_in_and_external_server_should_have_some_offers() {
@@ -26,5 +33,51 @@ class ApplicationFetchAndShowDataTest extends BaseIntegrationTest {
         step 16: user made POST /offers with header “Authorization: Bearer AAAA.BBBB.CCC” and offer and system returned CREATED(201) with saved offer
         step 17: user made GET /offers with header “Authorization: Bearer AAAA.BBBB.CCC” and system returned OK(200) with 1 offer
         */
+
+        //step 1
+        //given
+
+        wireMockServer.stubFor(
+                /*
+                * {
+        "title": "Junior Java Developer",
+        "company": "BlueSoft Sp. z o.o.",
+        "salary": "7 000 – 9 000 PLN",
+        "offerUrl": "https://nofluffjobs.com/pl/job/junior-java-developer-bluesoft-remote-hfuanrre"
+    },
+    {
+        "title": "Java (CMS) Developer",
+        "company": "Efigence SA",
+        "salary": "16 000 – 18 000 PLN",
+        "offerUrl": "https://nofluffjobs.com/pl/job/java-cms-developer-efigence-warszawa-b4qs8loh"
+    },*/
+                WireMock.get("/offers").willReturn(WireMock.aResponse().withStatus(HttpStatus.OK.value()).withHeader("Content-Type", "application/json").withBody(
+                        """
+                                 [
+                                         {
+                                             "title": "Junior Java Developer",
+                                             "company": "BlueSoft Sp. z o.o.",
+                                             "salary": "7 000 – 9 000 PLN",
+                                             "offerUrl": "https://nofluffjobs.com/pl/job/junior-java-developer-bluesoft-remote-hfuanrre"
+                                         },
+                                         {
+                                             "title": "Java (CMS) Developer",
+                                             "company": "Efigence SA",
+                                             "salary": "16 000 – 18 000 PLN",
+                                             "offerUrl": "https://nofluffjobs.com/pl/job/java-cms-developer-efigence-warszawa-b4qs8loh"
+                                         }
+
+                                ]
+                                """.trim()
+
+
+                )));
+
+        offerFetchable.fetchAllOffers();
+
+        //when
+        //then
+
+
     }
 }

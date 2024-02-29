@@ -7,7 +7,7 @@ public record OfferResponseDto(
         String url,
         String jobTitle,
         String companyName,
-        Long salary,
+        String salary,
         Long lowerBoundSalary,
 
         Long upperBoundSalary
