@@ -5,8 +5,13 @@ spring:
 
 job-offers:
   offer-fetcher:
+    scheduler:
+      cron: "0 */3 * * * *" # every 3 hours
     http:
       client:
         config:
           uri: http://ec2-3-120-147-150.eu-central-1.compute.amazonaws.com
           port: 5057
+
+scheduling:
+  enabled: true

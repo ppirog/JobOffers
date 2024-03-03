@@ -2,15 +2,19 @@ package joboffers.feature;
 
 import com.github.tomakehurst.wiremock.client.WireMock;
 import joboffers.BaseIntegrationTest;
-import joboffers.domain.offer.OfferFetchable;
+import joboffers.domain.offer.OfferFacade;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 
+import java.time.Duration;
+
+import static org.awaitility.Awaitility.await;
+
 class ApplicationFetchAndShowDataTest extends BaseIntegrationTest {
 
     @Autowired
-    OfferFetchable offerFetchable;
+    OfferFacade offerFacade;
 
     @Test
     public void user_want_to_see_offers_but_have_to_logged_in_and_external_server_should_have_some_offers() {
@@ -38,19 +42,6 @@ class ApplicationFetchAndShowDataTest extends BaseIntegrationTest {
         //given
 
         wireMockServer.stubFor(
-                /*
-                * {
-        "title": "Junior Java Developer",
-        "company": "BlueSoft Sp. z o.o.",
-        "salary": "7 000 – 9 000 PLN",
-        "offerUrl": "https://nofluffjobs.com/pl/job/junior-java-developer-bluesoft-remote-hfuanrre"
-    },
-    {
-        "title": "Java (CMS) Developer",
-        "company": "Efigence SA",
-        "salary": "16 000 – 18 000 PLN",
-        "offerUrl": "https://nofluffjobs.com/pl/job/java-cms-developer-efigence-warszawa-b4qs8loh"
-    },*/
                 WireMock.get("/offers").willReturn(WireMock.aResponse().withStatus(HttpStatus.OK.value()).withHeader("Content-Type", "application/json").withBody(
                         """
                                  [
@@ -73,10 +64,26 @@ class ApplicationFetchAndShowDataTest extends BaseIntegrationTest {
 
                 )));
 
-        offerFetchable.fetchAllOffers();
+
 
         //when
         //then
+
+        //step 2
+        //given
+
+        await()
+                .pollInterval(Duration.ofSeconds(1))
+                .until(() -> {
+                            try {
+                                offerFacade.fetchAllOffersAndSaveAllIfNotExist();
+                                return true;
+                            } catch (Exception e) {
+                                return false;
+                            }
+                        }
+                );
+        //when
 
 
     }
