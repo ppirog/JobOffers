@@ -2,6 +2,7 @@ package joboffers.feature;
 
 import com.github.tomakehurst.wiremock.client.WireMock;
 import joboffers.BaseIntegrationTest;
+import joboffers.SampleOffersResponse;
 import joboffers.domain.offer.OfferFacade;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,7 +12,7 @@ import java.time.Duration;
 
 import static org.awaitility.Awaitility.await;
 
-class ApplicationFetchAndShowDataTest extends BaseIntegrationTest {
+class ApplicationFetchAndShowDataTest extends BaseIntegrationTest implements SampleOffersResponse {
 
     @Autowired
     OfferFacade offerFacade;
@@ -43,27 +44,8 @@ class ApplicationFetchAndShowDataTest extends BaseIntegrationTest {
 
         wireMockServer.stubFor(
                 WireMock.get("/offers").willReturn(WireMock.aResponse().withStatus(HttpStatus.OK.value()).withHeader("Content-Type", "application/json").withBody(
-                        """
-                                 [
-                                         {
-                                             "title": "Junior Java Developer",
-                                             "company": "BlueSoft Sp. z o.o.",
-                                             "salary": "7 000 – 9 000 PLN",
-                                             "offerUrl": "https://nofluffjobs.com/pl/job/junior-java-developer-bluesoft-remote-hfuanrre"
-                                         },
-                                         {
-                                             "title": "Java (CMS) Developer",
-                                             "company": "Efigence SA",
-                                             "salary": "16 000 – 18 000 PLN",
-                                             "offerUrl": "https://nofluffjobs.com/pl/job/java-cms-developer-efigence-warszawa-b4qs8loh"
-                                         }
-
-                                ]
-                                """.trim()
-
-
+                        getSampleOffersResponse2Offers()
                 )));
-
 
 
         //when
