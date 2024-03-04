@@ -38,9 +38,9 @@ class OfferMapper {
 
     public Offer toOffer(OfferResponseFromServerDto dto) {
         return Offer.builder()
-                .url(dto.url())
-                .companyName(dto.companyName())
-                .jobTitle(dto.jobTitle())
+                .url(dto.offerUrl())
+                .companyName(dto.company())
+                .jobTitle(dto.title())
                 .salary(dto.salary())
                 .upperBoundSalary(dto.upperBoundSalary())
                 .lowerBoundSalary(dto.lowerBoundSalary())

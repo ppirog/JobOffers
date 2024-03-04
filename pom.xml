@@ -22,6 +22,8 @@
         <junit-jupiter-api.version>5.9.1</junit-jupiter-api.version>
         <assertj-core.version>3.21.0</assertj-core.version>
         <mockito-core.version>4.9.0</mockito-core.version>
+        <wiremock-jre8-standalone.version>2.35.0</wiremock-jre8-standalone.version>
+        <awaitility.version>4.2.0</awaitility.version>
     </properties>
 
     <dependencies>
@@ -34,6 +36,17 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-mongodb</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-configuration-processor</artifactId>
+            <optional>true</optional>
         </dependency>
 
         <dependency>
@@ -69,6 +82,43 @@
             <version>${mockito-core.version}</version>
             <scope>test</scope>
         </dependency>
+
+        <dependency>
+            <groupId>org.testcontainers</groupId>
+            <artifactId>junit-jupiter</artifactId>
+            <version>1.19.5</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.testcontainers</groupId>
+            <artifactId>testcontainers</artifactId>
+            <version>1.19.5</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.testcontainers</groupId>
+            <artifactId>mongodb</artifactId>
+            <version>1.19.5</version>
+            <scope>test</scope>
+        </dependency>
+
+        <!--        WIREMOCK-->
+
+        <dependency>
+            <groupId>com.github.tomakehurst</groupId>
+            <artifactId>wiremock-jre8-standalone</artifactId>
+            <version>${wiremock-jre8-standalone.version}</version>
+            <scope>test</scope>
+        </dependency>
+
+<!--        AWAITABLITY-->
+        <dependency>
+            <groupId>org.awaitility</groupId>
+            <artifactId>awaitility</artifactId>
+            <version>${awaitility.version}</version>
+            <scope>test</scope>
+        </dependency>
+
     </dependencies>
 
     <build>

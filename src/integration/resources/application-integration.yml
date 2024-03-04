@@ -1,0 +1,9 @@
+job-offers:
+  offer-fetcher:
+    scheduler:
+      cron: "*/1 * * * * *" # every 1 seconds
+    http:
+      client:
+        config:
+          uri: http://localhost
+          port: 80

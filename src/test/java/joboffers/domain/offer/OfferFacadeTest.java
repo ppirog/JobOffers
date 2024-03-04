@@ -176,7 +176,7 @@ class OfferFacadeTest {
 
         );
 
-        final List<OfferResponseDto> allOffers = offerFacade.fetchAllOffersAndSavellIfNotExist();
+        final List<OfferResponseDto> allOffers = offerFacade.fetchAllOffersAndSaveAllIfNotExist();
 
         assertEquals(2, allOffers.size());
     }
@@ -204,7 +204,7 @@ class OfferFacadeTest {
 
         );
 
-        final List<OfferResponseDto> allOffers = offerFacade.fetchAllOffersAndSavellIfNotExist();
+        final List<OfferResponseDto> allOffers = offerFacade.fetchAllOffersAndSaveAllIfNotExist();
 
         assertEquals(0, allOffers.size());
     }
@@ -232,7 +232,7 @@ class OfferFacadeTest {
 
         );
 
-        final List<OfferResponseDto> allOffers = offerFacade.fetchAllOffersAndSavellIfNotExist();
+        final List<OfferResponseDto> allOffers = offerFacade.fetchAllOffersAndSaveAllIfNotExist();
 
         assertEquals(1, allOffers.size());
         assertEquals("https://www.offer.com", allOffers.get(0).url());

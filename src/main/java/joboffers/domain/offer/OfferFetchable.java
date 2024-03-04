@@ -4,7 +4,7 @@ import joboffers.domain.offer.dto.OfferResponseFromServerDto;
 
 import java.util.List;
 
-interface OfferFetchable {
+public interface OfferFetchable {
 
     List<OfferResponseFromServerDto> fetchAllOffers();
 }
