@@ -4,6 +4,7 @@ import joboffers.domain.offer.dto.OfferRequestDto;
 import joboffers.domain.offer.dto.OfferResponseDto;
 import joboffers.domain.offer.dto.OfferResponseFromServerDto;
 import lombok.AllArgsConstructor;
+import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.stream.Collectors;
