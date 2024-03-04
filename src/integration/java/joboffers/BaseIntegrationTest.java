@@ -45,6 +45,8 @@ public class BaseIntegrationTest {
         registry.add("spring.data.mongodb.uri", mongoDBContainer::getReplicaSetUrl);
         registry.add("job-offers.offer-fetcher.http.client.config.uri", () -> WIRE_MOCK_HOST);
         registry.add("job-offers.offer-fetcher.http.client.config.port", wireMockServer::getPort);
+
+
     }
 
 }
