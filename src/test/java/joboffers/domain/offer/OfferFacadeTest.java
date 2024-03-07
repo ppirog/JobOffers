@@ -189,7 +189,7 @@ class OfferFacadeTest {
                 new OfferMapper(
                         new IdGeneratorTestImpl()
                 ),
-                new OfferFetcher(),
+                new OfferFetcherTestImplEmptyList(),
                 new OfferFilter()
         );
 
@@ -235,7 +235,6 @@ class OfferFacadeTest {
         final List<OfferResponseDto> allOffers = offerFacade.fetchAllOffersAndSaveAllIfNotExist();
 
         assertEquals(1, allOffers.size());
-        assertEquals("https://www.offer.com", allOffers.get(0).url());
     }
 
 

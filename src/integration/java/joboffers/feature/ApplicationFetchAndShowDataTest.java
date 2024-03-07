@@ -4,21 +4,30 @@ import com.github.tomakehurst.wiremock.client.WireMock;
 import joboffers.BaseIntegrationTest;
 import joboffers.SampleOffersResponse;
 import joboffers.domain.offer.OfferFacade;
+import joboffers.infrastructure.offer.controller.dto.UserResponseDto;
+import lombok.extern.log4j.Log4j2;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.test.web.servlet.ResultActions;
 
 import java.time.Duration;
 
 import static org.awaitility.Awaitility.await;
-
+import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+@Log4j2
 class ApplicationFetchAndShowDataTest extends BaseIntegrationTest implements SampleOffersResponse {
 
     @Autowired
     OfferFacade offerFacade;
 
     @Test
-    public void user_want_to_see_offers_but_have_to_logged_in_and_external_server_should_have_some_offers() {
+    public void user_want_to_see_offers_but_have_to_logged_in_and_external_server_should_have_some_offers() throws Exception {
         /*
         step 1: there are no offers in external HTTP server (http://ec2-3-120-147-150.eu-central-1.compute.amazonaws.com:5057/offers)
         step 2: scheduler ran 1st time and made GET to external server and system added 0 offers to database
@@ -39,23 +48,25 @@ class ApplicationFetchAndShowDataTest extends BaseIntegrationTest implements Sam
         step 17: user made GET /offers with header “Authorization: Bearer AAAA.BBBB.CCC” and system returned OK(200) with 1 offer
         */
 
-        //step 1
+        //        step 1: there are no offers in external HTTP server (http://ec2-3-120-147-150.eu-central-1.compute.amazonaws.com:5057/offers)
         //given
 
         wireMockServer.stubFor(
                 WireMock.get("/offers").willReturn(WireMock.aResponse().withStatus(HttpStatus.OK.value()).withHeader("Content-Type", "application/json").withBody(
-                        getSampleOffersResponse2Offers()
+                        getSampleOffersResponse0Offers()
                 )));
-
 
         //when
         //then
-
-        //step 2
+        assertEquals(0, offerFacade.findAllOffers().size());
+        assertEquals(0, offerFacade.fetchAllOffersAndSaveAllIfNotExist().size());
+        assertEquals(0, offerFacade.findAllOffers().size());
+        //step 2: scheduler ran 1st time and made GET to external server and system added 0 offers to database
         //given
 
         await()
                 .pollInterval(Duration.ofSeconds(1))
+                .atMost(Duration.ofSeconds(3))
                 .until(() -> {
                             try {
                                 offerFacade.fetchAllOffersAndSaveAllIfNotExist();
@@ -65,8 +76,35 @@ class ApplicationFetchAndShowDataTest extends BaseIntegrationTest implements Sam
                             }
                         }
                 );
+
         //when
 
 
+        //step 7: user made GET /offers with header “Authorization: Bearer AAAA.BBBB.CCC” and system returned OK(200) with 0 offers 7
+        //given
+        final ResultActions perform = mockMvc.perform(get("/offers"));
+
+        final MvcResult mvcResult = perform.andExpect(status().isOk()).andReturn();
+
+        final UserResponseDto userResponseDto = objectMapper.readValue(mvcResult.getResponse().getContentAsString(), UserResponseDto.class);
+        System.out.println("\n\n\n\n\n");
+        log.info("userResponseDto: {}", userResponseDto);
+
+        assertAll(
+                () -> assertEquals(0, userResponseDto.offers().size()),
+                () -> assertEquals(mvcResult.getResponse().getStatus(), HttpStatus.OK.value())
+        );
+
+        //step 11: user made GET /offers/9999 and system returned NOT_FOUND(404) with message “Offer with id 9999 not found”
+
+        final ResultActions perform1 = mockMvc.perform(get("/offers/9999"));
+
+        perform1.andExpect(content().json("""
+                                {
+                                    "message" : "Offer with id: 9999 not found",
+                                    "status" : "NOT_FOUND"
+                                }
+                """
+        ));
     }
 }

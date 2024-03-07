@@ -2,11 +2,10 @@ spring:
   data:
     mongodb:
       uri: mongodb://admin:admin@localhost:27018/joboffers-web
-
 job-offers:
   offer-fetcher:
     scheduler:
-      cron: "0 */3 * * * *" # every 3 hours
+      cron: "*/10 * * * * *" #"0 */3 * * * *" # every 3 hours
     http:
       client:
         config:

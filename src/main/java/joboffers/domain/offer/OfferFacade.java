@@ -48,7 +48,9 @@ public class OfferFacade {
 
         final List<Offer> offersToAddToDatabase = offerFilter.filterByUrl(all, collected);
 
-        offerRepository.saveAll(offersToAddToDatabase);
+        if(!offersToAddToDatabase.isEmpty()){
+            offerRepository.saveAll(offersToAddToDatabase);
+        }
 
         return offersToAddToDatabase.stream()
                 .map(offerMapper::toDto)
