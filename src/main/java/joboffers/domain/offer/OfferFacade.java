@@ -1,10 +1,9 @@
 package joboffers.domain.offer;
 
-import joboffers.domain.offer.dto.OfferRequestDto;
+import joboffers.infrastructure.offer.controller.dto.OfferRequestDto;
 import joboffers.domain.offer.dto.OfferResponseDto;
 import joboffers.domain.offer.dto.OfferResponseFromServerDto;
 import lombok.AllArgsConstructor;
-import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -32,11 +31,14 @@ public class OfferFacade {
     }
 
 
-    public void saveOffer(OfferRequestDto requestDto) {
+    public OfferResponseDto saveOffer(OfferRequestDto requestDto) {
 
         final Offer offer = offerMapper.toOffer(requestDto);
 
-        offerRepository.save(offer);
+        final Offer save = offerRepository.save(offer);
+
+        final OfferResponseDto dto = offerMapper.toDto(save);
+        return dto;
     }
 
     public List<OfferResponseDto> fetchAllOffersAndSaveAllIfNotExist() {
@@ -48,7 +50,9 @@ public class OfferFacade {
 
         final List<Offer> offersToAddToDatabase = offerFilter.filterByUrl(all, collected);
 
-        offerRepository.saveAll(offersToAddToDatabase);
+        if(!offersToAddToDatabase.isEmpty()){
+            offerRepository.saveAll(offersToAddToDatabase);
+        }
 
         return offersToAddToDatabase.stream()
                 .map(offerMapper::toDto)

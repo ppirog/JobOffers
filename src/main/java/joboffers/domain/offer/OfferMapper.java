@@ -1,6 +1,6 @@
 package joboffers.domain.offer;
 
-import joboffers.domain.offer.dto.OfferRequestDto;
+import joboffers.infrastructure.offer.controller.dto.OfferRequestDto;
 import joboffers.domain.offer.dto.OfferResponseDto;
 import joboffers.domain.offer.dto.OfferResponseFromServerDto;
 import lombok.AllArgsConstructor;
@@ -15,12 +15,11 @@ class OfferMapper {
 
     public OfferResponseDto toDto(Offer offer) {
         return OfferResponseDto.builder()
+                .id(offer.id())
                 .url(offer.url())
                 .jobTitle(offer.jobTitle())
                 .companyName(offer.companyName())
                 .salary(offer.salary())
-                .lowerBoundSalary(offer.lowerBoundSalary())
-                .upperBoundSalary(offer.upperBoundSalary())
                 .build();
     }
 
@@ -31,8 +30,7 @@ class OfferMapper {
                 .url(offerResponseDto.url())
                 .jobTitle(offerResponseDto.jobTitle())
                 .companyName(offerResponseDto.companyName())
-                .lowerBoundSalary(offerResponseDto.lowerBoundSalary())
-                .upperBoundSalary(offerResponseDto.upperBoundSalary())
+                .salary(offerResponseDto.salary())
                 .build();
     }
 
@@ -42,8 +40,6 @@ class OfferMapper {
                 .companyName(dto.company())
                 .jobTitle(dto.title())
                 .salary(dto.salary())
-                .upperBoundSalary(dto.upperBoundSalary())
-                .lowerBoundSalary(dto.lowerBoundSalary())
                 .build();
     }
 
