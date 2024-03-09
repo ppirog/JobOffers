@@ -1,6 +1,6 @@
 package joboffers.domain.offer;
 
-import joboffers.domain.offer.dto.OfferRequestDto;
+import joboffers.infrastructure.offer.controller.dto.OfferRequestDto;
 import joboffers.domain.offer.dto.OfferResponseDto;
 import org.junit.jupiter.api.Test;
 
@@ -31,9 +31,7 @@ class OfferFacadeTest {
                 OfferRequestDto.builder()
                         .url("url")
                         .jobTitle("jobTitle")
-                        .companyName("companyName")
-                        .lowerBoundSalary(1000L)
-                        .upperBoundSalary(2000L)
+
                         .build()
 
         );
@@ -43,8 +41,6 @@ class OfferFacadeTest {
                         .url("url2")
                         .jobTitle("jobTitle2")
                         .companyName("companyName2")
-                        .lowerBoundSalary(12000L)
-                        .upperBoundSalary(22000L)
                         .build()
 
         );
@@ -71,8 +67,7 @@ class OfferFacadeTest {
                         .url("url1")
                         .jobTitle("jobTitle1")
                         .companyName("companyName1")
-                        .lowerBoundSalary(1000L)
-                        .upperBoundSalary(2000L)
+
                         .build()
 
         );
@@ -82,8 +77,7 @@ class OfferFacadeTest {
                         .url("url2")
                         .jobTitle("jobTitle2")
                         .companyName("companyName2")
-                        .lowerBoundSalary(12000L)
-                        .upperBoundSalary(22000L)
+
                         .build()
 
         );
@@ -93,7 +87,6 @@ class OfferFacadeTest {
                         .url("url3")
                         .jobTitle("jobTitle3")
                         .companyName("companyName3")
-                        .salary(12000L)
                         .build()
         );
 
@@ -126,8 +119,7 @@ class OfferFacadeTest {
                         .url("urlTested")
                         .jobTitle("jobTitle")
                         .companyName("companyName")
-                        .lowerBoundSalary(1000L)
-                        .upperBoundSalary(2000L)
+
                         .build()
 
         );
@@ -170,8 +162,7 @@ class OfferFacadeTest {
                         .url("urlTested")
                         .jobTitle("jobTitle")
                         .companyName("companyName")
-                        .lowerBoundSalary(1000L)
-                        .upperBoundSalary(2000L)
+
                         .build()
 
         );
@@ -198,8 +189,7 @@ class OfferFacadeTest {
                         .url("https://www.offer2.com")
                         .jobTitle("jobTitle")
                         .companyName("companyName")
-                        .lowerBoundSalary(1000L)
-                        .upperBoundSalary(2000L)
+
                         .build()
 
         );
@@ -226,8 +216,7 @@ class OfferFacadeTest {
                         .url("https://www.offer2.com")
                         .jobTitle("jobTitle")
                         .companyName("companyName")
-                        .lowerBoundSalary(1000L)
-                        .upperBoundSalary(2000L)
+
                         .build()
 
         );

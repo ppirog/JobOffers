@@ -4,22 +4,27 @@ import com.github.tomakehurst.wiremock.client.WireMock;
 import joboffers.BaseIntegrationTest;
 import joboffers.SampleOffersResponse;
 import joboffers.domain.offer.OfferFacade;
+import joboffers.domain.offer.dto.OfferResponseDto;
 import joboffers.infrastructure.offer.controller.dto.UserResponseDto;
 import lombok.extern.log4j.Log4j2;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
 
 import java.time.Duration;
 
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.awaitility.Awaitility.await;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
 @Log4j2
 class ApplicationFetchAndShowDataTest extends BaseIntegrationTest implements SampleOffersResponse {
 
@@ -106,5 +111,36 @@ class ApplicationFetchAndShowDataTest extends BaseIntegrationTest implements Sam
                                 }
                 """
         ));
+
+        //step 16: user made POST /offers with header
+        final ResultActions perform3 = mockMvc.perform(post("/offers").contentType(MediaType.APPLICATION_JSON).content("""
+                {
+                  "jobTitle": "string",
+                  "companyName": "string",
+                  "salary": "5000",
+                  "url": "url"
+                }
+                """));
+
+        final MvcResult mvcResult1 = perform3.andExpect(status().isCreated()).andReturn();
+        final String contentAsString = mvcResult1.getResponse().getContentAsString();
+        final OfferResponseDto offerResponseDto = objectMapper.readValue(contentAsString, OfferResponseDto.class);
+        log.info("offerResponseDto: {}", offerResponseDto);
+
+        assertAll(
+                () -> assertEquals("url", offerResponseDto.url()),
+                () -> assertEquals("string", offerResponseDto.jobTitle()),
+                () -> assertEquals("string", offerResponseDto.companyName()),
+                () -> assertEquals("5000", offerResponseDto.salary()),
+                () -> assertThat(offerResponseDto.id()).isNotNull()
+        );
+        //step 17: user made GET /offers with header “Authorization: Bearer AAAA.BBBB.CCC” and system returned OK(200) with 1 offer
+        final ResultActions perform4 = mockMvc.perform(get("/offers/"+ offerResponseDto.id()));
+        perform4.andExpect(status().isOk());
+
+        final MvcResult mvcResult2 = mockMvc.perform(get("/offers")).andExpect(status().isOk()).andReturn();
+        final UserResponseDto userResponseDto1 = objectMapper.readValue(mvcResult2.getResponse().getContentAsString(), UserResponseDto.class);
+
+        assertEquals(1, userResponseDto1.offers().size());
     }
 }

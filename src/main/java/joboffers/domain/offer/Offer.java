@@ -13,8 +13,6 @@ record Offer(
         String jobTitle,
         String companyName,
         String salary,
-        Long lowerBoundSalary,
-        Long upperBoundSalary,
         @Indexed(unique = true) String url
 ) {
 }
