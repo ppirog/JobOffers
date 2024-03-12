@@ -30,23 +30,12 @@ public class BaseIntegrationTest {
     @Autowired
     public MockMvc mockMvc;
 
-    @Container
-    public static final MongoDBContainer mongoDBContainer = new MongoDBContainer(DockerImageName.parse("mongo:4.0.10"));
-
-
     @RegisterExtension
     public static WireMockExtension wireMockServer = WireMockExtension.newInstance()
             .options(wireMockConfig().dynamicPort())
             .build();
 
 
-    @DynamicPropertySource
-    public static void setProperties(DynamicPropertyRegistry registry) {
-        registry.add("spring.data.mongodb.uri", mongoDBContainer::getReplicaSetUrl);
-        registry.add("job-offers.offer-fetcher.http.client.config.uri", () -> WIRE_MOCK_HOST);
-        registry.add("job-offers.offer-fetcher.http.client.config.port", wireMockServer::getPort);
 
-
-    }
 
 }

@@ -41,7 +41,7 @@ public class OfferFacade {
         return dto;
     }
 
-    public List<OfferResponseDto> fetchAllOffersAndSaveAllIfNotExist() {
+    public List<OfferResponseDto> fetchNewOffersAndSaveToDatabase() {
         final List<Offer> all = offerRepository.findAll();
 
         final List<OfferResponseFromServerDto> offerResponseFromServerDtos = offerFetcher.fetchAllOffers();

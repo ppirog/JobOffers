@@ -167,7 +167,7 @@ class OfferFacadeTest {
 
         );
 
-        final List<OfferResponseDto> allOffers = offerFacade.fetchAllOffersAndSaveAllIfNotExist();
+        final List<OfferResponseDto> allOffers = offerFacade.fetchNewOffersAndSaveToDatabase();
 
         assertEquals(2, allOffers.size());
     }
@@ -194,7 +194,7 @@ class OfferFacadeTest {
 
         );
 
-        final List<OfferResponseDto> allOffers = offerFacade.fetchAllOffersAndSaveAllIfNotExist();
+        final List<OfferResponseDto> allOffers = offerFacade.fetchNewOffersAndSaveToDatabase();
 
         assertEquals(0, allOffers.size());
     }
@@ -221,7 +221,7 @@ class OfferFacadeTest {
 
         );
 
-        final List<OfferResponseDto> allOffers = offerFacade.fetchAllOffersAndSaveAllIfNotExist();
+        final List<OfferResponseDto> allOffers = offerFacade.fetchNewOffersAndSaveToDatabase();
 
         assertEquals(1, allOffers.size());
     }
