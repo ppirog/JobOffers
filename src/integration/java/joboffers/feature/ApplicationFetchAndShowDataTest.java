@@ -72,22 +72,20 @@ class ApplicationFetchAndShowDataTest extends BaseIntegrationTest implements Sam
         step 17: user made GET /offers with header “Authorization: Bearer AAAA.BBBB.CCC” and system returned OK(200) with 1 offer
         */
 
-        //        step 1: there are no offers in external HTTP server (http://ec2-3-120-147-150.eu-central-1.compute.amazonaws.com:5057/offers)
-        //given
 
+        //        step 1: there are no offers in external HTTP server (http://ec2-3-120-147-150.eu-central-1.compute.amazonaws.com:5057/offers)
         wireMockServer.stubFor(
                 WireMock.get("/offers").willReturn(WireMock.aResponse().withStatus(HttpStatus.OK.value()).withHeader("Content-Type", "application/json").withBody(
                         getSampleOffersResponse0Offers()
                 )));
 
-        //when
-        //then
+
         assertEquals(0, offerFacade.findAllOffers().size());
         assertEquals(0, offerFacade.fetchNewOffersAndSaveToDatabase().size());
         assertEquals(0, offerFacade.findAllOffers().size());
-        //step 2: scheduler ran 1st time and made GET to external server and system added 0 offers to database
-        //given
 
+
+        //step 2: scheduler ran 1st time and made GET to external server and system added 0 offers to database
         await()
                 .pollInterval(Duration.ofSeconds(1))
                 .atMost(Duration.ofSeconds(3))
@@ -101,11 +99,10 @@ class ApplicationFetchAndShowDataTest extends BaseIntegrationTest implements Sam
                         }
                 );
 
-        //when
+
 
 
         //step 7: user made GET /offers with header “Authorization: Bearer AAAA.BBBB.CCC” and system returned OK(200) with 0 offers 7
-        //given
         final ResultActions perform = mockMvc.perform(get("/offers"));
 
         final MvcResult mvcResult = perform.andExpect(status().isOk()).andReturn();
@@ -121,14 +118,15 @@ class ApplicationFetchAndShowDataTest extends BaseIntegrationTest implements Sam
 
         assertEquals(0, offerFacade.findAllOffers().size());
 
-        //step 8 there are 2 new offers in external HTTP server
 
+        //step 8 there are 2 new offers in external HTTP server
         wireMockServer.stubFor(
                 WireMock.get("/offers").willReturn(WireMock.aResponse()
                         .withStatus(HttpStatus.OK.value())
                         .withHeader("Content-Type", "application/json")
                         .withBody(getSampleOffersResponse2Offers()
                         )));
+
 
         //step 9: scheduler ran 2nd time and made GET to external server and system added 2 new offers with ids: 1000 and 2000 to database
         await()
@@ -143,6 +141,7 @@ class ApplicationFetchAndShowDataTest extends BaseIntegrationTest implements Sam
                             }
                         }
                 );
+
 
         //step 10: user made GET /offers with header “Authorization: Bearer AAAA.BBBB.CCC” and system returned OK(200) with 2 offers
         final MvcResult mvcResult3 = mockMvc.perform(get("/offers")).andExpect(status().isOk()).andReturn();
@@ -167,6 +166,7 @@ class ApplicationFetchAndShowDataTest extends BaseIntegrationTest implements Sam
                 () -> assertEquals("7 000 - 9 000 PLN", dtos.get(0).salary()),
                 () -> assertEquals("16 000 - 18 000 PLN", dtos.get(1).salary())
         );
+
 
         //step 11: user made GET /offers/9999 and system returned NOT_FOUND(404) with message “Offer with id 9999 not found”
         mockMvc.perform(get("/offers/9999")).andExpect(status().isNotFound());
