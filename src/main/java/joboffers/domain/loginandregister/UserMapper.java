@@ -4,7 +4,6 @@ import joboffers.domain.loginandregister.dto.UserMessageDto;
 import joboffers.domain.loginandregister.dto.UserRequestDto;
 import joboffers.domain.loginandregister.dto.UserResponseDto;
 import lombok.AllArgsConstructor;
-import org.springframework.stereotype.Component;
 
 @AllArgsConstructor
 class UserMapper {

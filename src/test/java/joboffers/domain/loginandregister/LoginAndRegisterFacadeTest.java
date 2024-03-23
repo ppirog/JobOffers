@@ -92,9 +92,7 @@ class LoginAndRegisterFacadeTest {
                 )
         );
 
-        assertThrows(UsernameNotFoundException.class, () -> {
-            loginAndRegisterFacade.findByUsername("username1");
-        });
+        assertThrows(UsernameNotFoundException.class, () -> loginAndRegisterFacade.findByUsername("username1"));
 
     }
 

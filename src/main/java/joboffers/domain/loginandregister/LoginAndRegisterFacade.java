@@ -3,11 +3,8 @@ package joboffers.domain.loginandregister;
 import joboffers.domain.loginandregister.dto.UserMessageDto;
 import joboffers.domain.loginandregister.dto.UserRequestDto;
 import joboffers.domain.loginandregister.dto.UserResponseDto;
-import joboffers.domain.offer.NotFoundInDatabaseException;
 import lombok.AllArgsConstructor;
 import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.stereotype.Component;
 
 @AllArgsConstructor
 public class LoginAndRegisterFacade {

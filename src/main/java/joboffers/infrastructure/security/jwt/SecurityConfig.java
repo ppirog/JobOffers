@@ -6,7 +6,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.Customizer;
-import org.springframework.security.config.annotation.SecurityConfigurerAdapter;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -22,7 +21,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @Configuration
 @AllArgsConstructor
 @EnableWebSecurity
-public class SecurityConfig extends SecurityConfigurerAdapter {
+public class SecurityConfig {
 
     private final LoginAndRegisterFacade loginAndRegisterFacade;
     private final JwtAuthTokenFilter jwtAuthTokenFilter;
@@ -31,10 +30,6 @@ public class SecurityConfig extends SecurityConfigurerAdapter {
         return authentcationConfiguration.getAuthenticationManager();
     }
 
-    //    @Bean
-//    public UserDetailsService userDetailsService(LoginAndRegisterFacade loginAndRegisterFacade) {
-//        return new LoginUserDetailsService(loginAndRegisterFacade);
-//    }
     @Bean
     public UserDetailsService userDetailsService() {
         return new LoginUserDetailsService(loginAndRegisterFacade);
