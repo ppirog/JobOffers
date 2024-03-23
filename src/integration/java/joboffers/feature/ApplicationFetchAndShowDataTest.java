@@ -6,6 +6,7 @@ import joboffers.SampleOffersResponse;
 import joboffers.domain.offer.OfferFacade;
 import joboffers.domain.offer.dto.OfferResponseDto;
 import joboffers.infrastructure.offer.controller.dto.UserResponseDto;
+import joboffers.infrastructure.token.controller.JwtResponseDto;
 import lombok.extern.log4j.Log4j2;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +23,7 @@ import org.testcontainers.utility.DockerImageName;
 import java.time.Duration;
 import java.util.Comparator;
 import java.util.List;
+import java.util.regex.Pattern;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.awaitility.Awaitility.await;
@@ -37,6 +39,7 @@ class ApplicationFetchAndShowDataTest extends BaseIntegrationTest implements Sam
 
     @Container
     public static final MongoDBContainer mongoDBContainer = new MongoDBContainer(DockerImageName.parse("mongo:4.0.10"));
+
     @Autowired
     OfferFacade offerFacade;
 
@@ -49,6 +52,7 @@ class ApplicationFetchAndShowDataTest extends BaseIntegrationTest implements Sam
 
     @Test
     public void user_want_to_see_offers_but_have_to_logged_in_and_external_server_should_have_some_offers() throws Exception {
+
         /*
         step 1: there are no offers in external HTTP server (http://ec2-3-120-147-150.eu-central-1.compute.amazonaws.com:5057/offers)
         step 2: scheduler ran 1st time and made GET to external server and system added 0 offers to database
@@ -72,8 +76,7 @@ class ApplicationFetchAndShowDataTest extends BaseIntegrationTest implements Sam
         step 17: user made GET /offers with header “Authorization: Bearer AAAA.BBBB.CCC” and system returned OK(200) with 1 offer
         */
 
-
-        //        step 1: there are no offers in external HTTP server (http://ec2-3-120-147-150.eu-central-1.compute.amazonaws.com:5057/offers)
+        //step 1: there are no offers in external HTTP server (http://ec2-3-120-147-150.eu-central-1.compute.amazonaws.com:5057/offers)
         wireMockServer.stubFor(
                 WireMock.get("/offers").willReturn(WireMock.aResponse().withStatus(HttpStatus.OK.value()).withHeader("Content-Type", "application/json").withBody(
                         getSampleOffersResponse0Offers()
@@ -100,10 +103,74 @@ class ApplicationFetchAndShowDataTest extends BaseIntegrationTest implements Sam
                 );
 
 
+        //step 3: user tried to get JWT token by requesting POST /token with username=someUser, password=somePassword and system returned UNAUTHORIZED(401)
+        final ResultActions perform2 = mockMvc
+                .perform(post("/token")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("""
+                {
+                "username": "someUser",
+                "password": "somePassword"
+                }
+                """));
+
+                perform2.andExpect(status().isUnauthorized())
+                .andExpect(content().json("""
+                {
+                "message": "Bad credentials",
+                "status": "UNAUTHORIZED"
+                }
+                """));
+
+
+        //step 4: user made GET /offers with no jwt token and system returned UNAUTHORIZED(401)
+        mockMvc.perform(get("/offers"))
+                .andExpect(status().isUnauthorized());
+
+
+        //step 5: user made POST /register with username=someUser, password=somePassword and system registered user with status OK(200)
+        mockMvc.perform(post("/register")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("""
+                {
+                "username": "someUser",
+                "password": "somePassword"
+                }
+                """))
+                .andExpect(status().isCreated())
+                .andExpect(content().json("""
+                {
+                "message": "User registered",
+                "status": "CREATED"
+                }
+                """));
+
+
+        //step 6: user tried to get JWT token by requesting POST /token with username=someUser, password=somePassword and system returned OK(200) and jwttoken=AAAA.BBBB.CCC
+        final ResultActions perform5 = mockMvc.perform(post("/token")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("""
+                        {
+                        "username": "someUser",
+                        "password": "somePassword"
+                        }
+                        """));
+
+        final MvcResult mvcResult4 = perform5.andExpect(status().isOk()).andReturn();
+        final JwtResponseDto jwtResponseDto = objectMapper.readValue(mvcResult4.getResponse().getContentAsString(), JwtResponseDto.class);
+        String token = jwtResponseDto.token();
+
+        assertAll(
+                () -> assertEquals(jwtResponseDto.username(),"someUser"),
+                () -> assertThat(token).matches(Pattern.compile("^[A-Za-z0-9-_=]+\\.[A-Za-z0-9-_=]+\\.?[A-Za-z0-9-_.+/=]*$"))
+        );
 
 
         //step 7: user made GET /offers with header “Authorization: Bearer AAAA.BBBB.CCC” and system returned OK(200) with 0 offers 7
-        final ResultActions perform = mockMvc.perform(get("/offers"));
+        final ResultActions perform = mockMvc.perform(get("/offers")
+                .contentType(MediaType.APPLICATION_JSON)
+                .header("Authorization","Bearer " + token)
+        );
 
         final MvcResult mvcResult = perform.andExpect(status().isOk()).andReturn();
 
@@ -144,14 +211,23 @@ class ApplicationFetchAndShowDataTest extends BaseIntegrationTest implements Sam
 
 
         //step 10: user made GET /offers with header “Authorization: Bearer AAAA.BBBB.CCC” and system returned OK(200) with 2 offers
-        final MvcResult mvcResult3 = mockMvc.perform(get("/offers")).andExpect(status().isOk()).andReturn();
+        final MvcResult mvcResult3 = mockMvc.perform(get("/offers")
+                        .header("Authorization","Bearer " + token)
+                )
+                .andExpect(status().isOk()).andReturn();
+
         final UserResponseDto userResponseDto2 = objectMapper.readValue(mvcResult3.getResponse().getContentAsString(), UserResponseDto.class);
         final List<OfferResponseDto> dtos = userResponseDto2.offers();
         dtos.sort(Comparator.comparing(OfferResponseDto::jobTitle));
         assertEquals(2, dtos.size());
 
-        mockMvc.perform(get("/offers/" + dtos.get(0).id())).andExpect(status().isOk());
-        mockMvc.perform(get("/offers/" + dtos.get(1).id())).andExpect(status().isOk());
+        mockMvc.perform(get("/offers/" + dtos.get(0).id())
+                .header("Authorization","Bearer " + token)
+        ).andExpect(status().isOk());
+
+        mockMvc.perform(get("/offers/" + dtos.get(1).id())
+                .header("Authorization","Bearer " + token)
+        ).andExpect(status().isOk());
 
         assertAll(
                 () -> assertEquals("AJunior Java Developer", dtos.get(0).jobTitle()),
@@ -169,17 +245,25 @@ class ApplicationFetchAndShowDataTest extends BaseIntegrationTest implements Sam
 
 
         //step 11: user made GET /offers/9999 and system returned NOT_FOUND(404) with message “Offer with id 9999 not found”
-        mockMvc.perform(get("/offers/9999")).andExpect(status().isNotFound());
+        mockMvc.perform(get("/offers/9999")
+                .header("Authorization","Bearer " + token)
+        ).andExpect(status().isNotFound());
 
 
         //step 12: user made GET /offers/1000 and system returned OK(200) with offer
-        mockMvc.perform(get("/offers/" + dtos.get(0).id())).andExpect(status().isOk());
-        mockMvc.perform(get("/offers/" + dtos.get(1).id())).andExpect(status().isOk());
+        mockMvc.perform(get("/offers/" + dtos.get(0).id())
+                .header("Authorization","Bearer " + token)
+        ).andExpect(status().isOk());
+        mockMvc.perform(get("/offers/" + dtos.get(1).id())
+                .header("Authorization","Bearer " + token)
+        ).andExpect(status().isOk());
 
         //step 13: there are 2 new offers in external HTTP server
         //step 14: scheduler ran 3rd time and made GET to external server and system added 2 new offers with ids: 3000 and 4000 to database
         //step 15: user made GET /offers with header “Authorization: Bearer AAAA.BBBB.CCC” and system returned OK(200) with 4 offers with ids: 1000,2000, 3000 and 4000
-        final ResultActions perform1 = mockMvc.perform(get("/offers/9999"));
+        final ResultActions perform1 = mockMvc.perform(get("/offers/9999")
+                .header("Authorization","Bearer " + token)
+        );
 
         perform1.andExpect(content().json("""
                                 {
@@ -190,7 +274,9 @@ class ApplicationFetchAndShowDataTest extends BaseIntegrationTest implements Sam
         ));
 
         //step 16: user made POST /offers with header
-        final ResultActions perform3 = mockMvc.perform(post("/offers").contentType(MediaType.APPLICATION_JSON).content("""
+        final ResultActions perform3 = mockMvc.perform(post("/offers").contentType(MediaType.APPLICATION_JSON)
+                .header("Authorization","Bearer " + token)
+                .content("""
                 {
                   "jobTitle": "string",
                   "companyName": "string",
@@ -213,10 +299,14 @@ class ApplicationFetchAndShowDataTest extends BaseIntegrationTest implements Sam
         );
 
         //step 17: user made GET /offers with header “Authorization: Bearer AAAA.BBBB.CCC” and system returned OK(200) with 1 offer
-        final ResultActions perform4 = mockMvc.perform(get("/offers/" + offerResponseDto.id()));
+        final ResultActions perform4 = mockMvc.perform(get("/offers/" + offerResponseDto.id())
+                .header("Authorization","Bearer " + token)
+        );
         perform4.andExpect(status().isOk());
 
-        final MvcResult mvcResult2 = mockMvc.perform(get("/offers")).andExpect(status().isOk()).andReturn();
+        final MvcResult mvcResult2 = mockMvc.perform(get("/offers")
+                .header("Authorization","Bearer " + token)
+        ).andExpect(status().isOk()).andReturn();
         final UserResponseDto userResponseDto1 = objectMapper.readValue(mvcResult2.getResponse().getContentAsString(), UserResponseDto.class);
 
         assertEquals(3, userResponseDto1.offers().size());

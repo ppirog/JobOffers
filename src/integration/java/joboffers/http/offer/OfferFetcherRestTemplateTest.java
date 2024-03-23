@@ -6,12 +6,13 @@ import joboffers.SampleOffersResponse;
 import joboffers.domain.offer.OfferFetchable;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.web.server.ResponseStatusException;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.catchThrowable;
 import static org.junit.jupiter.api.Assertions.assertAll;
-
+@WithMockUser
 class OfferFetcherRestTemplateTest extends OfferFetcherRestTemplateTestConfig implements SampleOffersResponse {
 
 

@@ -1,6 +1,5 @@
 package joboffers.infrastructure.apivalidation;
 
-import com.mongodb.DuplicateKeyException;
 import com.mongodb.MongoWriteException;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.context.support.DefaultMessageSourceResolvable;

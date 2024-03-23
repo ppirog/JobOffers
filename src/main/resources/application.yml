@@ -15,3 +15,8 @@ job-offers:
 
 scheduling:
   enabled: true
+
+auth:
+  jwt:
+    secret: ${JWT_SECRET}
+    expiration-time: 30
