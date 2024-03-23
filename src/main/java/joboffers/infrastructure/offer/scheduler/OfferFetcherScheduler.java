@@ -19,7 +19,7 @@ class OfferFetcherScheduler {
     @Scheduled(cron = "${job-offers.offer-fetcher.scheduler.cron}")
     public List<OfferResponseDto> fetchAllOffersAndSaveAllIfNotExist() {
         log.info("Fetching offers");
-        final List<OfferResponseDto> offerResponseDtos = offerFacade.fetchAllOffersAndSaveAllIfNotExist();
+        final List<OfferResponseDto> offerResponseDtos = offerFacade.fetchNewOffersAndSaveToDatabase();
         log.info("Offers fetched: " + offerResponseDtos);
         return offerResponseDtos;
     }

@@ -25,6 +25,7 @@
         <wiremock-jre8-standalone.version>2.35.0</wiremock-jre8-standalone.version>
         <awaitility.version>4.2.0</awaitility.version>
         <springfox-swagger-ui.version>3.0.0</springfox-swagger-ui.version>
+        <java-jwt.version>4.4.0</java-jwt.version>
     </properties>
 
     <dependencies>
@@ -54,6 +55,18 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-validation</artifactId>
         </dependency>
+
+<!--        /spring boot security-->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-security</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>spring-security-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+
 
 
         <dependency>
@@ -125,12 +138,21 @@
             <version>${awaitility.version}</version>
             <scope>test</scope>
         </dependency>
+
 <!--        SWAGGER-->
         <dependency>
             <groupId>org.springdoc</groupId>
             <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
             <version>2.1.0</version>
         </dependency>
+
+<!--        JWT-->
+        <dependency>
+            <groupId>com.auth0</groupId>
+            <artifactId>java-jwt</artifactId>
+            <version>${java-jwt.version}</version>
+        </dependency>
+
 
 
     </dependencies>

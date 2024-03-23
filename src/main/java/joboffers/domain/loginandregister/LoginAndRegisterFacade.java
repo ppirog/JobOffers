@@ -4,6 +4,7 @@ import joboffers.domain.loginandregister.dto.UserMessageDto;
 import joboffers.domain.loginandregister.dto.UserRequestDto;
 import joboffers.domain.loginandregister.dto.UserResponseDto;
 import lombok.AllArgsConstructor;
+import org.springframework.security.authentication.BadCredentialsException;
 
 @AllArgsConstructor
 public class LoginAndRegisterFacade {
@@ -34,7 +35,7 @@ public class LoginAndRegisterFacade {
 
     public UserResponseDto findByUsername(String username) {
         final User user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new NotFoundInDatabaseException("User not found"));
+                .orElseThrow(() -> new BadCredentialsException("User not found"));
 
         return userMapper.toUserResponseDto(user);
     }

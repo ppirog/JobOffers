@@ -3,17 +3,33 @@ package joboffers.apivalidation;
 import joboffers.BaseIntegrationTest;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.context.DynamicPropertyRegistry;
+import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.web.servlet.ResultActions;
+import org.testcontainers.containers.MongoDBContainer;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.utility.DockerImageName;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
+@WithMockUser
 class ApiValidationIntegrationTest extends BaseIntegrationTest {
+    @Container
+    public static final MongoDBContainer mongoDBContainer = new MongoDBContainer(DockerImageName.parse("mongo:4.0.10"));
+    @DynamicPropertySource
+    public static void setProperties(DynamicPropertyRegistry registry) {
+        registry.add("spring.data.mongodb.uri", mongoDBContainer::getReplicaSetUrl);
+        registry.add("job-offers.offer-fetcher.http.client.config.uri", () -> WIRE_MOCK_HOST);
+        registry.add("job-offers.offer-fetcher.http.client.config.port", wireMockServer::getPort);
+
+    }
+
     @Test
     void should_throw_bad_request_to_user_when_url_are_null() throws Exception {
 
-        final ResultActions perform = mockMvc.perform(post("/offers").contentType(MediaType.APPLICATION_JSON).content("""
+            final ResultActions perform = mockMvc.perform(post("/offers").contentType(MediaType.APPLICATION_JSON).content("""
                 {}
                 """));
         perform.andExpect(status().isBadRequest());
@@ -105,6 +121,7 @@ class ApiValidationIntegrationTest extends BaseIntegrationTest {
     }
 
     @Test
+    @WithMockUser
     void should_throw_bad_request_to_user_when_jobTitle_are_empty() throws Exception {
 
         final ResultActions perform = mockMvc.perform(post("/offers").contentType(MediaType.APPLICATION_JSON).content("""
