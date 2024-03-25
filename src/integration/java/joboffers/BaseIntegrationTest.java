@@ -18,6 +18,11 @@ import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMoc
 public class BaseIntegrationTest {
 
     public static final String WIRE_MOCK_HOST = "http://localhost";
+    public static final String FULL_IMAGE_NAME = "redis";
+
+    public static final String REDIS_TIME_TO_LIVE = "PT1S";
+
+
 
     @Autowired
     public ObjectMapper objectMapper;
