@@ -17,6 +17,7 @@ public class OfferFacade {
     private final OfferFetchable offerFetcher;
     private final OfferFilter offerFilter;
 
+
     @Cacheable("offers")
     public List<OfferResponseDto> findAllOffers() {
         final List<Offer> all = offerRepository.findAll();
@@ -25,6 +26,8 @@ public class OfferFacade {
                 .collect(Collectors.toList());
     }
 
+
+    @Cacheable("byId")
     public OfferResponseDto findOfferById(String id) {
         final Offer byId = offerRepository.findById(id)
                 .orElseThrow(() -> new NotFoundInDatabaseException("Offer with id: " + id + " not found"));
