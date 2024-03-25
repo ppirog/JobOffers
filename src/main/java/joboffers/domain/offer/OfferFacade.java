@@ -4,6 +4,7 @@ import joboffers.infrastructure.offer.controller.dto.OfferRequestDto;
 import joboffers.domain.offer.dto.OfferResponseDto;
 import joboffers.domain.offer.dto.OfferResponseFromServerDto;
 import lombok.AllArgsConstructor;
+import org.springframework.cache.annotation.Cacheable;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -16,6 +17,7 @@ public class OfferFacade {
     private final OfferFetchable offerFetcher;
     private final OfferFilter offerFilter;
 
+    @Cacheable("offers")
     public List<OfferResponseDto> findAllOffers() {
         final List<Offer> all = offerRepository.findAll();
         return all.stream()
@@ -37,8 +39,7 @@ public class OfferFacade {
 
         final Offer save = offerRepository.save(offer);
 
-        final OfferResponseDto dto = offerMapper.toDto(save);
-        return dto;
+        return offerMapper.toDto(save);
     }
 
     public List<OfferResponseDto> fetchNewOffersAndSaveToDatabase() {

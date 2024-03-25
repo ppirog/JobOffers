@@ -16,6 +16,7 @@ import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
+import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.MongoDBContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.utility.DockerImageName;
@@ -37,17 +38,29 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @Log4j2
 class ApplicationFetchAndShowDataTest extends BaseIntegrationTest implements SampleOffersResponse {
 
-    @Container
-    public static final MongoDBContainer mongoDBContainer = new MongoDBContainer(DockerImageName.parse("mongo:4.0.10"));
-
     @Autowired
     OfferFacade offerFacade;
+
+    @Container
+    public static final GenericContainer<?> REDIS;
+
+    static {
+
+        REDIS = new GenericContainer<>(FULL_IMAGE_NAME)
+                .withExposedPorts(6379);
+        REDIS.start();
+    }
+    @Container
+    public static final MongoDBContainer mongoDBContainer = new MongoDBContainer(DockerImageName.parse("mongo:4.0.10"));
 
     @DynamicPropertySource
     public static void setProperties(DynamicPropertyRegistry registry) {
         registry.add("spring.data.mongodb.uri", mongoDBContainer::getReplicaSetUrl);
         registry.add("job-offers.offer-fetcher.http.client.config.uri", () -> WIRE_MOCK_HOST);
         registry.add("job-offers.offer-fetcher.http.client.config.port", wireMockServer::getPort);
+        registry.add("spring.cache.redis.time-to-live", () -> REDIS_TIME_TO_LIVE);
+        registry.add("spring.data.redis.port", () -> REDIS.getFirstMappedPort().toString());
+        registry.add("spring.cache.redis", () -> FULL_IMAGE_NAME);
     }
 
     @Test
@@ -128,7 +141,7 @@ class ApplicationFetchAndShowDataTest extends BaseIntegrationTest implements Sam
                 .andExpect(status().isUnauthorized());
 
 
-        //step 5: user made POST /register with username=someUser, password=somePassword and system registered user with status OK(200)
+        //step 5: user made POST /register with username=someUser, password=somePassword and system registered user with status CREATED(201)
         mockMvc.perform(post("/register")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("""
