@@ -11,12 +11,12 @@ spring:
   cache:
     type: redis
     redis:
-      time-to-live: PT1S
+      time-to-live: PT1H
 
 job-offers:
   offer-fetcher:
     scheduler:
-      cron: "*/30 * * * * *" # every 3 hours #"0 */3 * * * *"
+      cron: "*/30 * * * * *" #every 3 hours #"0 */3 * * * *"
     http:
       client:
         config:
