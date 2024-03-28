@@ -9,7 +9,7 @@ spring:
       host: ${REDIS_HOST:localhost}
       port: ${REDIS_PORT:63792}
   cache:
-    type:
+    type: redis
     redis:
       time-to-live: PT1S
 

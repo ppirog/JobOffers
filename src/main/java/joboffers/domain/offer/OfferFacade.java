@@ -4,6 +4,7 @@ import joboffers.infrastructure.offer.controller.dto.OfferRequestDto;
 import joboffers.domain.offer.dto.OfferResponseDto;
 import joboffers.domain.offer.dto.OfferResponseFromServerDto;
 import lombok.AllArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 
 import java.util.List;
@@ -35,23 +36,17 @@ public class OfferFacade {
         return offerMapper.toDto(byId);
     }
 
-
+    @CacheEvict(value = {"offers", "byId"}, allEntries = true)
     public OfferResponseDto saveOffer(OfferRequestDto requestDto) {
-
         final Offer offer = offerMapper.toOffer(requestDto);
-
         final Offer save = offerRepository.save(offer);
-
         return offerMapper.toDto(save);
     }
 
     public List<OfferResponseDto> fetchNewOffersAndSaveToDatabase() {
         final List<Offer> all = offerRepository.findAll();
-
         final List<OfferResponseFromServerDto> offerResponseFromServerDtos = offerFetcher.fetchAllOffers();
-
         final List<Offer> collected = offerMapper.toOfferList(offerResponseFromServerDtos);
-
         final List<Offer> offersToAddToDatabase = offerFilter.filterByUrl(all, collected);
 
         if(!offersToAddToDatabase.isEmpty()){

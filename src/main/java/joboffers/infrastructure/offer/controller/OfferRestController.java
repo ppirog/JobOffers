@@ -6,6 +6,7 @@ import joboffers.domain.offer.dto.OfferResponseDto;
 import joboffers.infrastructure.offer.controller.dto.OfferRequestDto;
 import joboffers.infrastructure.offer.controller.dto.UserResponseDto;
 import lombok.AllArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;

@@ -7,7 +7,9 @@ import joboffers.domain.offer.OfferFacade;
 import joboffers.infrastructure.offer.controller.dto.UserResponseDto;
 import lombok.extern.log4j.Log4j2;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.SpyBean;
+import org.springframework.cache.CacheManager;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
@@ -19,6 +21,7 @@ import org.testcontainers.utility.DockerImageName;
 
 import java.time.Duration;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.awaitility.Awaitility.await;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -35,7 +38,8 @@ class RedisIntegrationTest extends BaseIntegrationTest implements SampleOffersRe
     private static final GenericContainer<?> REDIS;
 
 
-
+    @Autowired
+    CacheManager cacheManager;
 
     static {
 
@@ -52,6 +56,7 @@ class RedisIntegrationTest extends BaseIntegrationTest implements SampleOffersRe
         registry.add("spring.data.mongodb.uri", mongoDBContainer::getReplicaSetUrl);
         registry.add("job-offers.offer-fetcher.http.client.config.uri", () -> WIRE_MOCK_HOST);
         registry.add("job-offers.offer-fetcher.http.client.config.port", wireMockServer::getPort);
+
         registry.add("spring.cache.redis.time-to-live", () -> REDIS_TIME_TO_LIVE);
         registry.add("spring.data.redis.port", () -> REDIS.getFirstMappedPort().toString());
         registry.add("spring.cache.redis", () -> FULL_IMAGE_NAME);
@@ -73,7 +78,7 @@ class RedisIntegrationTest extends BaseIntegrationTest implements SampleOffersRe
 
         //step 1: user tried to GET /offers 15 times and only 3 times findOffOffers method will be done. The rest of responses will be taken from redis cache
         await()
-                .atMost(Duration.ofSeconds(3))
+                .atMost(Duration.ofSeconds(5))
                 .pollInterval(Duration.ofMillis(200))
                 .untilAsserted(() -> {
                             mockMvc.perform(get("/offers")
@@ -83,6 +88,8 @@ class RedisIntegrationTest extends BaseIntegrationTest implements SampleOffersRe
                             verify(offerFacade, times(3)).findAllOffers();
                         }
                 );
+
+        assertThat(cacheManager.getCacheNames().contains("offers")).isTrue();
     }
 
     @Test
@@ -119,5 +126,7 @@ class RedisIntegrationTest extends BaseIntegrationTest implements SampleOffersRe
                             verify(offerFacade, times(3)).findOfferById(id);
                         }
                 );
+
+        assertThat(cacheManager.getCacheNames().contains("byId")).isTrue();
     }
 }

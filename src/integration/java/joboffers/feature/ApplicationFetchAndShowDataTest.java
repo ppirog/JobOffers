@@ -58,6 +58,7 @@ class ApplicationFetchAndShowDataTest extends BaseIntegrationTest implements Sam
         registry.add("spring.data.mongodb.uri", mongoDBContainer::getReplicaSetUrl);
         registry.add("job-offers.offer-fetcher.http.client.config.uri", () -> WIRE_MOCK_HOST);
         registry.add("job-offers.offer-fetcher.http.client.config.port", wireMockServer::getPort);
+
         registry.add("spring.cache.redis.time-to-live", () -> REDIS_TIME_TO_LIVE);
         registry.add("spring.data.redis.port", () -> REDIS.getFirstMappedPort().toString());
         registry.add("spring.cache.redis", () -> FULL_IMAGE_NAME);
@@ -89,6 +90,8 @@ class ApplicationFetchAndShowDataTest extends BaseIntegrationTest implements Sam
         step 17: user made GET /offers with header “Authorization: Bearer AAAA.BBBB.CCC” and system returned OK(200) with 1 offer
         */
 
+
+
         //step 1: there are no offers in external HTTP server (http://ec2-3-120-147-150.eu-central-1.compute.amazonaws.com:5057/offers)
         wireMockServer.stubFor(
                 WireMock.get("/offers").willReturn(WireMock.aResponse().withStatus(HttpStatus.OK.value()).withHeader("Content-Type", "application/json").withBody(
@@ -99,6 +102,7 @@ class ApplicationFetchAndShowDataTest extends BaseIntegrationTest implements Sam
         assertEquals(0, offerFacade.findAllOffers().size());
         assertEquals(0, offerFacade.fetchNewOffersAndSaveToDatabase().size());
         assertEquals(0, offerFacade.findAllOffers().size());
+
 
 
         //step 2: scheduler ran 1st time and made GET to external server and system added 0 offers to database
@@ -114,6 +118,7 @@ class ApplicationFetchAndShowDataTest extends BaseIntegrationTest implements Sam
                             }
                         }
                 );
+
 
 
         //step 3: user tried to get JWT token by requesting POST /token with username=someUser, password=somePassword and system returned UNAUTHORIZED(401)
@@ -136,9 +141,11 @@ class ApplicationFetchAndShowDataTest extends BaseIntegrationTest implements Sam
                 """));
 
 
+
         //step 4: user made GET /offers with no jwt token and system returned UNAUTHORIZED(401)
         mockMvc.perform(get("/offers"))
                 .andExpect(status().isUnauthorized());
+
 
 
         //step 5: user made POST /register with username=someUser, password=somePassword and system registered user with status CREATED(201)
@@ -157,6 +164,7 @@ class ApplicationFetchAndShowDataTest extends BaseIntegrationTest implements Sam
                 "status": "CREATED"
                 }
                 """));
+
 
 
         //step 6: user tried to get JWT token by requesting POST /token with username=someUser, password=somePassword and system returned OK(200) and jwttoken=AAAA.BBBB.CCC
@@ -179,6 +187,7 @@ class ApplicationFetchAndShowDataTest extends BaseIntegrationTest implements Sam
         );
 
 
+
         //step 7: user made GET /offers with header “Authorization: Bearer AAAA.BBBB.CCC” and system returned OK(200) with 0 offers 7
         final ResultActions perform = mockMvc.perform(get("/offers")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -199,6 +208,7 @@ class ApplicationFetchAndShowDataTest extends BaseIntegrationTest implements Sam
         assertEquals(0, offerFacade.findAllOffers().size());
 
 
+
         //step 8 there are 2 new offers in external HTTP server
         wireMockServer.stubFor(
                 WireMock.get("/offers").willReturn(WireMock.aResponse()
@@ -206,6 +216,7 @@ class ApplicationFetchAndShowDataTest extends BaseIntegrationTest implements Sam
                         .withHeader("Content-Type", "application/json")
                         .withBody(getSampleOffersResponse2Offers()
                         )));
+
 
 
         //step 9: scheduler ran 2nd time and made GET to external server and system added 2 new offers with ids: 1000 and 2000 to database
@@ -221,6 +232,7 @@ class ApplicationFetchAndShowDataTest extends BaseIntegrationTest implements Sam
                             }
                         }
                 );
+
 
 
         //step 10: user made GET /offers with header “Authorization: Bearer AAAA.BBBB.CCC” and system returned OK(200) with 2 offers
@@ -257,10 +269,12 @@ class ApplicationFetchAndShowDataTest extends BaseIntegrationTest implements Sam
         );
 
 
+
         //step 11: user made GET /offers/9999 and system returned NOT_FOUND(404) with message “Offer with id 9999 not found”
         mockMvc.perform(get("/offers/9999")
                 .header("Authorization","Bearer " + token)
         ).andExpect(status().isNotFound());
+
 
 
         //step 12: user made GET /offers/1000 and system returned OK(200) with offer
@@ -270,6 +284,8 @@ class ApplicationFetchAndShowDataTest extends BaseIntegrationTest implements Sam
         mockMvc.perform(get("/offers/" + dtos.get(1).id())
                 .header("Authorization","Bearer " + token)
         ).andExpect(status().isOk());
+
+
 
         //step 13: there are 2 new offers in external HTTP server
         //step 14: scheduler ran 3rd time and made GET to external server and system added 2 new offers with ids: 3000 and 4000 to database
@@ -286,17 +302,19 @@ class ApplicationFetchAndShowDataTest extends BaseIntegrationTest implements Sam
                 """
         ));
 
+
+
         //step 16: user made POST /offers with header
         final ResultActions perform3 = mockMvc.perform(post("/offers").contentType(MediaType.APPLICATION_JSON)
-                .header("Authorization","Bearer " + token)
+                .header("Authorization", "Bearer " + token)
                 .content("""
-                {
-                  "jobTitle": "string",
-                  "companyName": "string",
-                  "salary": "5000",
-                  "url": "url"
-                }
-                """));
+                        {
+                          "jobTitle": "string",
+                          "companyName": "string",
+                          "salary": "5000",
+                          "url": "url"
+                        }
+                        """));
 
         final MvcResult mvcResult1 = perform3.andExpect(status().isCreated()).andReturn();
         final String contentAsString = mvcResult1.getResponse().getContentAsString();
@@ -311,9 +329,11 @@ class ApplicationFetchAndShowDataTest extends BaseIntegrationTest implements Sam
                 () -> assertThat(offerResponseDto.id()).isNotNull()
         );
 
-        //step 17: user made GET /offers with header “Authorization: Bearer AAAA.BBBB.CCC” and system returned OK(200) with 1 offer
+
+
+        //step 17:user made GET /offers with header “Authorization Bearer AAAA.BBBB.CCC”and system returned OK (200) with 1 offer
         final ResultActions perform4 = mockMvc.perform(get("/offers/" + offerResponseDto.id())
-                .header("Authorization","Bearer " + token)
+                .header("Authorization", "Bearer " + token)
         );
         perform4.andExpect(status().isOk());
 

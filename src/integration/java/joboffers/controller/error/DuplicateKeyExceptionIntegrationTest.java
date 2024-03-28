@@ -7,6 +7,7 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.web.servlet.ResultActions;
+import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.MongoDBContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.utility.DockerImageName;
@@ -17,12 +18,24 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class DuplicateKeyExceptionIntegrationTest extends BaseIntegrationTest {
     @Container
     public static final MongoDBContainer mongoDBContainer = new MongoDBContainer(DockerImageName.parse("mongo:4.0.10"));
+    @Container
+    public static final GenericContainer<?> REDIS;
+
+    static {
+
+        REDIS = new GenericContainer<>(FULL_IMAGE_NAME)
+                .withExposedPorts(6379);
+        REDIS.start();
+    }
     @DynamicPropertySource
     public static void setProperties(DynamicPropertyRegistry registry) {
         registry.add("spring.data.mongodb.uri", mongoDBContainer::getReplicaSetUrl);
         registry.add("job-offers.offer-fetcher.http.client.config.uri", () -> WIRE_MOCK_HOST);
         registry.add("job-offers.offer-fetcher.http.client.config.port", wireMockServer::getPort);
 
+        registry.add("spring.cache.redis.time-to-live", () -> REDIS_TIME_TO_LIVE);
+        registry.add("spring.data.redis.port", () -> REDIS.getFirstMappedPort().toString());
+        registry.add("spring.cache.redis", () -> FULL_IMAGE_NAME);
     }
 
     @Test
