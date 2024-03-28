@@ -57,7 +57,7 @@ All functionality are unit and integration tested.
 ![image](https://github.com/ppirog/JobOffers/assets/126290295/08550690-b446-49e8-b64b-03b9f5ee11e4)
 ![image](https://github.com/ppirog/JobOffers/assets/126290295/e5448ad9-a7e8-4682-aaf9-4c2edc499aa0)
 
-# To start app go to go to file docker-compose.yml first and launch it
+##### To start app go to go to file docker-compose.yml first and launch it
 
 
 
