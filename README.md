@@ -25,7 +25,8 @@ To use application user has to register, login and fetch JWT token
 Then user can fetch data using endpoints:
 - GET /offers
 - GET /offers/{id}
-Application enables adding offers manualy using endpoing
+
+Application enables adding offers manualy using endpoint:
 - POST /offers
 
 All functionality are unit and integration tested. 
