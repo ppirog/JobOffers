@@ -25,6 +25,7 @@ public class SecurityConfig {
 
     private final LoginAndRegisterFacade loginAndRegisterFacade;
     private final JwtAuthTokenFilter jwtAuthTokenFilter;
+
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration authentcationConfiguration) throws Exception {
         return authentcationConfiguration.getAuthenticationManager();
@@ -40,20 +41,18 @@ public class SecurityConfig {
         return new BCryptPasswordEncoder();
     }
 
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
         return httpSecurity.csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/swagger-ui/**").permitAll()
-                        .requestMatchers("/swagger-ui/**").permitAll()
-                        .requestMatchers("/swagger-ui.html").permitAll()
-                        .requestMatchers("/swagger-ui/index.html").permitAll()
-                        .requestMatchers("/v3/api-docs").permitAll()
+                        .requestMatchers("/v3/api-docs/**").permitAll()
                         .requestMatchers("/webjars/**").permitAll()
                         .requestMatchers("/token/**").permitAll()
                         .requestMatchers("/register/**").permitAll()
-                        .requestMatchers("/login/**").permitAll()
                         .requestMatchers("/swagger-resources/**").permitAll()
+                        .requestMatchers("/webjars/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
@@ -61,6 +60,5 @@ public class SecurityConfig {
                 .addFilterBefore(jwtAuthTokenFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
     }
-
 
 }

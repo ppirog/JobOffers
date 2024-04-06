@@ -38,6 +38,8 @@ public class SchedulerTest extends BaseIntegrationTest {
         registry.add("spring.cache.redis.time-to-live", () -> REDIS_TIME_TO_LIVE);
         registry.add("spring.data.redis.port", () -> REDIS.getFirstMappedPort().toString());
         registry.add("spring.cache.redis", () -> FULL_IMAGE_NAME);
+
+        registry.add("job-offers.offer-fetcher.scheduler.cron", () -> "*/1 * * * * *");
     }
 
 

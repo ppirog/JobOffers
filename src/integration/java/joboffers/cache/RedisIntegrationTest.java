@@ -93,12 +93,12 @@ class RedisIntegrationTest extends BaseIntegrationTest implements SampleOffersRe
 
     @Test
     public void should_cached_by_id_offers_using_redis() throws Exception {
-        String token = registerAndGetToken();
-
         wireMockServer.stubFor(
                 WireMock.get("/offers").willReturn(WireMock.aResponse().withStatus(HttpStatus.OK.value()).withHeader("Content-Type", "application/json").withBody(
                         getSampleOffersResponse2Offers()
                 )));
+
+        String token = registerAndGetToken();
 
         offerFacade.fetchNewOffersAndSaveToDatabase();
 
