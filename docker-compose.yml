@@ -7,7 +7,7 @@ services:
     image: mongo:4.0.10
     restart: always
     ports:
-      - "27018:27017"
+      - "27017:27017"
 
     environment:
       MONGO_INITDB_ROOT_USERNAME: root
@@ -19,11 +19,13 @@ services:
     image: mongo-express
     restart: always # Always restart this container
     ports:
-      - "8082:8081" # Connect to the mongo-express container on port 8081
+      - "8081:8081" # Connect to the mongo-express container on port 8081
     environment:
       ME_CONFIG_MONGODB_ADMINUSERNAME: root
       ME_CONFIG_MONGODB_ADMINPASSWORD: example
-      ME_CONFIG_MONGODB_URL: mongodb://root:example@mongo:27018/ # Connect to the mongo container mongodb://{mongo-image-username}:{mongo-image-password}:{port}/{database-name}
+      ME_CONFIG_MONGODB_URL: mongodb://root:example@mongo:27017/
+      #mongodb://root:example@mongo:27017/
+      #mongodb://root:example@mongo:27018/ # Connect to the mongo container mongodb://{mongo-image-username}:{mongo-image-password}:{port}/{database-name}
 
   redis:
     image: redis:latest
@@ -36,8 +38,26 @@ services:
     image: rediscommander/redis-commander:latest
     container_name: redis-commander
     ports:
-      - "8083:8081"
+      - "8082:8081"
     environment:
       - REDIS_HOSTS=local:redis:6379
     depends_on:
       - redis
+
+# AWS CONFIGURATION
+#  job-offers:
+#    container_name: offers
+#    build: .
+#    #image: 851725379261.dkr.ecr.eu-central-1.amazonaws.com/offers:latest
+#    restart: always
+#    ports:
+#      - "8000:8080"
+#    environment:
+#      MONGO_USER: root
+#      MONGO_PASSWORD: example
+#      MONGO_HOST: mongo
+#      MONGO_PORT: 27017
+#      MONGO_DB_NAME: joboffers-web
+#      MONGO_AUTH_SOURCE: admin
+#      REDIS_HOST: redis
+#      REDIS_PORT: 6379
