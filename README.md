@@ -13,9 +13,14 @@
 	<code><img width="50" src="https://cdn.brighttalk.com/ams/california/images/channel/19357/image_840418.png" alt="Auth0" title="Auth0"/></code>
 	<code><img width="50" src="https://user-images.githubusercontent.com/25181517/117207242-07d5a700-adf4-11eb-975e-be04e62b984b.png" alt="Maven" title="Maven"/></code>
 	<code><img width="50" src="https://user-images.githubusercontent.com/25181517/190229463-87fa862f-ccf0-48da-8023-940d287df610.png" alt="Lombok" title="Lombok"/></code>
+	<div align="center">
+	<code><img width="50" src="https://user-images.githubusercontent.com/25181517/183896132-54262f2e-6d98-41e3-8888-e40ab5a17326.png" alt="AWS" title="AWS"/></code>
+</div>
 </div>     
 <br>
-This apllication fetches job offers from an external service using a rest api and stores it in mongodb database. 
+This apllication fetches job offers from an external service using a rest api and stores it in mongodb database.
+
+Application was deployed on AWS.  (instruction how to use it in LIVEDEMO section)  
 To boost time efficiency during making request redis db was added.
 
 Fetching new offers is done by app automaticly using scheduler.
@@ -51,7 +56,22 @@ All functionality are unit and integration tested.
 # Architecture
 ![img](https://github.com/ppirog/JobOffers/assets/126290295/c0a5aa63-4b33-467d-adbe-7b013c43340e)
 
-# Postman
+# LIVEDEMO
+Application was deployed on AWS. 
+If you want to use deployed app use postman as in an example below BUT INSTEAD OF
+http://localhost:8080 add http://ec2-18-159-37-230.eu-central-1.compute.amazonaws.com:8000
+
+http://ec2-18-159-37-230.eu-central-1.compute.amazonaws.com:8000/register  
+http://ec2-18-159-37-230.eu-central-1.compute.amazonaws.com:8000/token  
+http://ec2-18-159-37-230.eu-central-1.compute.amazonaws.com:8000/login  
+http://ec2-18-159-37-230.eu-central-1.compute.amazonaws.com:8000/offers  
+
+# Postman AWS
+![image](https://github.com/ppirog/JobOffers/assets/126290295/03928a3f-d828-46e3-afc0-dccfef3df684)
+![image](https://github.com/ppirog/JobOffers/assets/126290295/232af0ec-e461-48ff-b00b-6279e5372cee)
+![image](https://github.com/ppirog/JobOffers/assets/126290295/01ba0675-7acd-4e36-bb89-eb014badc6e4)
+
+# Postman localhost
 ![image](https://github.com/ppirog/JobOffers/assets/126290295/423242ea-d62f-411f-9011-02f569c16898)
 ![image](https://github.com/ppirog/JobOffers/assets/126290295/adc880e9-57a0-4afb-9a3e-32653bae169f)
 ![image](https://github.com/ppirog/JobOffers/assets/126290295/438f160d-add5-43e5-9ff9-796cb5f3ceee)
