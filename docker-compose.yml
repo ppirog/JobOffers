@@ -7,7 +7,7 @@ services:
     image: mongo:4.0.10
     restart: always
     ports:
-      - "27017:27017"
+      - "27018:27017"
 
     environment:
       MONGO_INITDB_ROOT_USERNAME: root
@@ -23,7 +23,7 @@ services:
     environment:
       ME_CONFIG_MONGODB_ADMINUSERNAME: root
       ME_CONFIG_MONGODB_ADMINPASSWORD: example
-      ME_CONFIG_MONGODB_URL: mongodb://root:example@mongo:27017/
+      ME_CONFIG_MONGODB_URL: mongodb://root:example@mongo:27018/
       #mongodb://root:example@mongo:27017/
       #mongodb://root:example@mongo:27018/ # Connect to the mongo container mongodb://{mongo-image-username}:{mongo-image-password}:{port}/{database-name}
 
@@ -31,7 +31,7 @@ services:
     image: redis:latest
     container_name: redis
     ports:
-      - "6379:6379"
+      - "6380:6379"
     restart: always
 
   redis-commander:
@@ -40,7 +40,7 @@ services:
     ports:
       - "8082:8081"
     environment:
-      - REDIS_HOSTS=local:redis:6379
+      - REDIS_HOSTS=local:redis:6380
     depends_on:
       - redis
 
