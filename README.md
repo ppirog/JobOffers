@@ -29,10 +29,10 @@
 
 # LIVEDEMO
 
-CLICK LINK BELOW TO SEE ON YOUTUBE HOW APP WORKS:
+CLICK LINK TO SEE ON YOUTUBE HOW APP WORKS:
 https://www.youtube.com/watch?v=-vTgTVoMRhs
 
-CLICK LINK BELOW TO USE APP:
+CLICK LINK TO USE APP:
 http://ec2-3-79-167-135.eu-central-1.compute.amazonaws.com/login
 
 # Frontend
