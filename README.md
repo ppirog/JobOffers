@@ -27,6 +27,14 @@
 </div>
 <br>
 
+# LIVEDEMO
+
+CLICK LINK BELOW TO SEE ON YOUTUBE HOW APP WORKS:
+https://www.youtube.com/watch?v=-vTgTVoMRhs
+
+CLICK LINK BELOW TO USE APP:
+http://ec2-3-79-167-135.eu-central-1.compute.amazonaws.com/login
+
 # Frontend
 
 Frontend to this app: https://github.com/ppirog/joboffers-front 
@@ -74,22 +82,20 @@ All functionality are unit and integration tested.
 # Architecture
 ![img](https://github.com/ppirog/JobOffers/assets/126290295/c0a5aa63-4b33-467d-adbe-7b013c43340e)
 
-# LIVEDEMO
+# HOW TO USE IT FROM POSTMAN
 Application was deployed on AWS. 
 If you want to use deployed app use postman as in an example below BUT INSTEAD OF
-http://localhost:8080 add http://ec2-18-159-37-230.eu-central-1.compute.amazonaws.com:8000
+http://localhost:8080 add http://ec2-3-79-167-135.eu-central-1.compute.amazonaws.com:8000
 
-http://ec2-18-159-37-230.eu-central-1.compute.amazonaws.com:8000/register  
-http://ec2-18-159-37-230.eu-central-1.compute.amazonaws.com:8000/token  
-http://ec2-18-159-37-230.eu-central-1.compute.amazonaws.com:8000/login  
-http://ec2-18-159-37-230.eu-central-1.compute.amazonaws.com:8000/offers  
+http://ec2-3-79-167-135.eu-central-1.compute.amazonaws.com:8000/register  
+http://ec2-3-79-167-135.eu-central-1.compute.amazonaws.com:8000/token  
+http://ec2-3-79-167-135.eu-central-1.compute.amazonaws.com:8000/offers  
 
 # Postman AWS
-![image](https://github.com/ppirog/JobOffers/assets/126290295/03928a3f-d828-46e3-afc0-dccfef3df684)
-![image](https://github.com/ppirog/JobOffers/assets/126290295/232af0ec-e461-48ff-b00b-6279e5372cee)
-![image](https://github.com/ppirog/JobOffers/assets/126290295/01ba0675-7acd-4e36-bb89-eb014badc6e4)
+![image](https://github.com/ppirog/JobOffers/assets/126290295/fc30f795-17e5-4879-935b-e15d8fe38e83)
 
-# Postman localhost
+
+# Postman Localhost
 ![image](https://github.com/ppirog/JobOffers/assets/126290295/423242ea-d62f-411f-9011-02f569c16898)
 ![image](https://github.com/ppirog/JobOffers/assets/126290295/adc880e9-57a0-4afb-9a3e-32653bae169f)
 ![image](https://github.com/ppirog/JobOffers/assets/126290295/438f160d-add5-43e5-9ff9-796cb5f3ceee)
