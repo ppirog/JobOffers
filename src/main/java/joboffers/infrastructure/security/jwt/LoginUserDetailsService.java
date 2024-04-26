@@ -4,6 +4,7 @@ import joboffers.domain.loginandregister.LoginAndRegisterFacade;
 import joboffers.domain.loginandregister.dto.UserResponseDto;
 import lombok.AllArgsConstructor;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 
@@ -20,10 +21,11 @@ public class LoginUserDetailsService implements UserDetailsService {
     }
 
     private org.springframework.security.core.userdetails.User getUser(UserResponseDto dto){
+        String role = dto.isAdmin() ? "ADMIN" : "USER";
         return new org.springframework.security.core.userdetails.User(
                 dto.username(),
                 dto.password(),
-                Collections.emptyList()
+                Collections.singletonList(new SimpleGrantedAuthority(role))
         );
     }
 }

@@ -14,6 +14,7 @@ class UserMapper {
                 .id(idGenerable.generate())
                 .username(userRequestDto.username())
                 .password(userRequestDto.password())
+                .isAdmin(false)
                 .build();
     }
 
@@ -21,6 +22,7 @@ class UserMapper {
         return UserResponseDto.builder()
                 .username(user.username())
                 .password(user.password())
+                .isAdmin(user.isAdmin())
                 .build();
     }
 

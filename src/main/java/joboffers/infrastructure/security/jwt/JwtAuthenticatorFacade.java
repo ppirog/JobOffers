@@ -53,6 +53,7 @@ public class JwtAuthenticatorFacade {
                 .withIssuedAt(now)
                 .withExpiresAt(expireAt)
                 .withIssuer(issuer)
+                .withClaim("role", user.getAuthorities().iterator().next().getAuthority())
                 .sign(algorithm);
     }
 

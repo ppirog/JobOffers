@@ -10,6 +10,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.AllArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -48,7 +49,8 @@ public class JwtAuthTokenFilter extends OncePerRequestFilter {
 
         // this substring method is to remove phrase "Bearer " from the token
         DecodedJWT jwt = verifier.verify(token.substring(7));
+        String role = jwt.getClaim("role").asString();
 
-        return new UsernamePasswordAuthenticationToken(jwt.getSubject(), null, Collections.emptyList());
+        return new UsernamePasswordAuthenticationToken(jwt.getSubject(), null, Collections.singleton(new SimpleGrantedAuthority("ROLE_" + role)));
     }
 }
