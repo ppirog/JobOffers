@@ -57,4 +57,14 @@ public class OfferFacade {
                 .map(offerMapper::toDto)
                 .collect(Collectors.toList());
     }
+
+    @CacheEvict(value = {"offers", "byId"}, allEntries = true)
+    public OfferResponseDto deleteOfferById(final String id) {
+
+        final Offer byId = offerRepository.findById(id)
+                .orElseThrow(() -> new NotFoundInDatabaseException("Offer with id: " + id + " not found"));
+
+        offerRepository.deleteById(byId.id());
+        return offerMapper.toDto(byId);
+    }
 }
