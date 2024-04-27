@@ -6,8 +6,11 @@ import joboffers.domain.loginandregister.dto.UserResponseDto;
 import org.junit.jupiter.api.Test;
 import org.springframework.security.authentication.BadCredentialsException;
 
+import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class LoginAndRegisterFacadeTest {
 
@@ -29,9 +32,16 @@ class LoginAndRegisterFacadeTest {
                         .password("password")
                         .build()
         );
+
+
         // Then
-        assertEquals("User registered", register.message());
+        assertAll(
+                () -> assertEquals("User registered", register.message()),
+                () -> assertFalse(register.userRequestDto().isAdmin())
+
+        );
     }
+
 
     @Test
     void registerUserImpossible() {

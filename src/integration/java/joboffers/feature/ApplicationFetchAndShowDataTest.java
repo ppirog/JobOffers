@@ -3,6 +3,7 @@ package joboffers.feature;
 import com.github.tomakehurst.wiremock.client.WireMock;
 import joboffers.BaseIntegrationTest;
 import joboffers.SampleOffersResponse;
+import joboffers.domain.loginandregister.LoginAndRegisterFacade;
 import joboffers.domain.offer.OfferFacade;
 import joboffers.domain.offer.dto.OfferResponseDto;
 import joboffers.infrastructure.offer.controller.dto.UserResponseDto;
@@ -30,6 +31,7 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.awaitility.Awaitility.await;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -40,6 +42,9 @@ class ApplicationFetchAndShowDataTest extends BaseIntegrationTest implements Sam
 
     @Autowired
     OfferFacade offerFacade;
+
+    @Autowired
+    LoginAndRegisterFacade loginAndRegisterFacade;
 
     @Container
     public static final GenericContainer<?> REDIS;
@@ -88,6 +93,12 @@ class ApplicationFetchAndShowDataTest extends BaseIntegrationTest implements Sam
 
         step 16: user made POST /offers with header “Authorization: Bearer AAAA.BBBB.CCC” and offer and system returned CREATED(201) with saved offer
         step 17: user made GET /offers with header “Authorization: Bearer AAAA.BBBB.CCC” and system returned OK(200) with 1 offer
+
+        step 18: user made POST /register with username=admin, password=admin and system registered user with status CREATED(201)
+        step 19: user changed role to admin
+        step 20: user made DELETE /offers with header “Authorization Bearer AAAA.BBBB.CCC”and system returned isForbidden (403)
+        step 21: admin made DELETE /offers with header “Authorization Bearer AAAA.BBBB.CCC”and system returned isOk (200)
+        step 22: user made GET /offers with header “Authorization Bearer AAAA.BBBB.CCC”and system returned isNotFound (404)
         */
 
 
@@ -343,5 +354,65 @@ class ApplicationFetchAndShowDataTest extends BaseIntegrationTest implements Sam
         final UserResponseDto userResponseDto1 = objectMapper.readValue(mvcResult2.getResponse().getContentAsString(), UserResponseDto.class);
 
         assertEquals(3, userResponseDto1.offers().size());
+
+
+
+        //step 18: user made POST /register with username=admin, password=admin and system registered user with status CREATED(201)
+        mockMvc.perform(post("/register")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                {
+                "username": "admin",
+                "password": "admin"
+                }
+                """))
+                .andExpect(status().isCreated())
+                .andExpect(content().json("""
+                {
+                "message": "User registered",
+                "status": "CREATED"
+                }
+                """));
+
+
+
+        //step 19: user changed role to admin
+        loginAndRegisterFacade.changeUserRole("admin", true);
+
+        final ResultActions adminAction = mockMvc.perform(post("/token")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                "username": "admin",
+                                "password": "admin"
+                                }
+                                """))
+                .andExpect(status().isOk());
+
+        final JwtResponseDto adminJwtResponseDto = objectMapper.readValue(adminAction.andReturn().getResponse().getContentAsString(), JwtResponseDto.class);
+        String adminToken = adminJwtResponseDto.token();
+
+
+
+        //step 20: user made DELETE /offers with header “Authorization Bearer AAAA.BBBB.CCC”and system returned isForbidden (403)
+        mockMvc.perform(delete("/offers/" + offerResponseDto.id())
+                .header("Authorization", "Bearer " + token)
+        ).andExpect(status().isForbidden());
+
+
+
+        //step 21: admin made DELETE /offers with header “Authorization Bearer AAAA.BBBB.CCC”and system returned isOk (200)
+        mockMvc.perform(delete("/offers/" + offerResponseDto.id())
+                .header("Authorization", "Bearer " + adminToken)
+        ).andExpect(status().isOk());
+
+
+
+        //step 22: user made GET /offers with header “Authorization Bearer AAAA.BBBB.CCC”and system returned isNotFound (404)
+        mockMvc.perform(get("/offers/" + offerResponseDto.id())
+                .header("Authorization", "Bearer " + token)
+        ).andExpect(status().isNotFound());
+
+
     }
 }

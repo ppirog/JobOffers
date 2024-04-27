@@ -31,6 +31,19 @@ class InMemoryUserRepositoryTestImpl implements UserRepository {
     }
 
     @Override
+    public void updateIsAdminByUsername(final String username, final boolean isAdmin) {
+        users.values().stream().filter(user -> user.username().equals(username)).findFirst().ifPresent(user -> {
+            User a = User.builder()
+                    .username(user.username())
+                    .password(user.password())
+                    .isAdmin(isAdmin)
+                    .build();
+            save(a);
+            delete(user);
+        });
+    }
+
+    @Override
     public <S extends User> S insert(final S entity) {
         return null;
     }

@@ -39,4 +39,9 @@ public class LoginAndRegisterFacade {
 
         return userMapper.toUserResponseDto(user);
     }
+
+    public void changeUserRole(String username, boolean isAdmin) {
+        userRepository.updateIsAdminByUsername(username, isAdmin);
+    }
+
 }
