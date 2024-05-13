@@ -33,7 +33,7 @@ CLICK LINK TO SEE ON YOUTUBE HOW APP WORKS:
 https://www.youtube.com/watch?v=-vTgTVoMRhs
 
 CLICK LINK TO USE APP:
-http://ec2-3-79-167-135.eu-central-1.compute.amazonaws.com/login
+http://ec2-3-79-167-135.eu-central-1.compute.amazonaws.com/login (currently disabled)
 
 # Frontend
 
